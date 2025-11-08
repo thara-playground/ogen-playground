@@ -30,7 +30,7 @@ func (h *handler) Read(ctx context.Context, params api.ReadParams) (r *api.ThePe
 			// wrong: not found Cat.meow, Dog.dark
 		},
 
-		// Pet3: NG(ogen not supported)
+		// Pet3: NG(complex anyOf not implemented)
 
 		// oneof
 
@@ -85,7 +85,7 @@ func (h *handler) Create(ctx context.Context, req *api.CreateReq, params api.Cre
 		//NG: missing field
 	}
 
-	// Pet3: NG(ogen not supported)
+	// Pet3: NG(complex anyOf not implemented)
 
 	// oneof
 
