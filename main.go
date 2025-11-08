@@ -30,10 +30,13 @@ func (h *handler) Read(ctx context.Context, params api.ReadParams) (r *api.ThePe
 			// wrong: not found Cat.meow, Dog.dark
 		},
 
+		// Pet3: NG(ogen not supported)
+
 		// oneof
+
+		// OK
 		Pet4: api.Pet4{
 			Type: api.Cat3Pet4,
-			// OK
 			Cat3: api.Cat3{
 				Meow: api.NewOptInt32(10),
 			},
@@ -41,12 +44,14 @@ func (h *handler) Read(ctx context.Context, params api.ReadParams) (r *api.ThePe
 				Bark: api.NewOptString("22"),
 			},
 		},
+		// OK
 		Pet5: api.Pet5{
 			OneOf: api.NewCat5Pet5Sum(api.Cat5{
 				Kind: api.Cat5KindCat,
 				Meow: api.NewOptInt32(10),
 			}),
 		},
+		// OK
 		Pet6: api.Pet6{
 			OneOf: api.NewPet6CatPet6Sum(api.Pet6Cat{
 				DataKind: api.Pet6CatDataKindCat,
@@ -63,6 +68,7 @@ func (h *handler) Read(ctx context.Context, params api.ReadParams) (r *api.ThePe
 				Bark: false,
 			}),
 		},
+		// OK
 		Pet8: api.Pet8{
 			OneOf: api.NewDog8Pet8Sum(api.Dog8{
 				Bark: api.NewOptString(""),
@@ -72,6 +78,57 @@ func (h *handler) Read(ctx context.Context, params api.ReadParams) (r *api.ThePe
 }
 
 func (h *handler) Create(ctx context.Context, req *api.CreateReq, params api.CreateParams) (r *api.ThePet, err error) {
+	if req.Body.Pet.Kind == "cat" {
+		//NG: missing field
+	}
+	if req.Body.Pet2.ID == "cat" {
+		//NG: missing field
+	}
+
+	// Pet3: NG(ogen not supported)
+
+	// oneof
+
+	// OK
+	switch req.Body.Pet4.Type {
+	case api.Cat3Pet4:
+		fmt.Println(req.Body.Pet4.Cat3)
+	case api.Dog3Pet4:
+		fmt.Println(req.Body.Pet4.Dog3)
+	}
+
+	// OK
+	switch req.Body.Pet5.OneOf.Type {
+	case api.Cat5Pet5Sum:
+		fmt.Println(req.Body.Pet5.OneOf.Cat5)
+	case api.Dog5Pet5Sum:
+		fmt.Println(req.Body.Pet5.OneOf.Dog5)
+	}
+
+	// OK
+	switch req.Body.Pet6.OneOf.Type {
+	case api.Pet6CatPet6Sum:
+		fmt.Println(req.Body.Pet6.OneOf.Pet6Cat)
+	case api.Pet6DogPet6Sum:
+		fmt.Println(req.Body.Pet6.OneOf.Pet6Dog)
+	}
+
+	// OK
+	switch req.Body.Pet7.OneOf.Type {
+	case api.Cat7Pet7Sum:
+		fmt.Println(req.Body.Pet7.OneOf.Cat7)
+	case api.Dog7Pet7Sum:
+		fmt.Println(req.Body.Pet7.OneOf.Dog7)
+	}
+
+	// OK
+	switch req.Body.Pet8.OneOf.Type {
+	case api.Cat8Pet8Sum:
+		fmt.Println(req.Body.Pet8.OneOf.Cat8)
+	case api.Dog8Pet8Sum:
+		fmt.Println(req.Body.Pet8.OneOf.Dog8)
+	}
+
 	return &api.ThePet{}, nil
 }
 
