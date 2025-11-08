@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/thara/ogen-playground/api"
 )
@@ -72,4 +73,11 @@ func (h *handler) Read(ctx context.Context, params api.ReadParams) (r *api.ThePe
 
 func (h *handler) Create(ctx context.Context, req *api.CreateReq, params api.CreateParams) (r *api.ThePet, err error) {
 	return &api.ThePet{}, nil
+}
+
+func (h *handler) List(ctx context.Context, params api.ListParams) (r []api.ThePet, err error) {
+	for _, t := range params.Tag {
+		fmt.Println(t)
+	}
+	return r, nil
 }

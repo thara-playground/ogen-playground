@@ -20,6 +20,13 @@ func (UnimplementedHandler) Create(ctx context.Context, req *CreateReq, params C
 	return r, ht.ErrNotImplemented
 }
 
+// List implements list operation.
+//
+// GET /
+func (UnimplementedHandler) List(ctx context.Context, params ListParams) (r []ThePet, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // Read implements read operation.
 //
 // GET /{id}

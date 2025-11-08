@@ -7,5 +7,6 @@ type OperationName = string
 
 const (
 	CreateOperation OperationName = "Create"
+	ListOperation   OperationName = "List"
 	ReadOperation   OperationName = "Read"
 )

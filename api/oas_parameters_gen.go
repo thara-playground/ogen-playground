@@ -79,6 +79,80 @@ func decodeCreateParams(args [1]string, argsEscaped bool, r *http.Request) (para
 	return params, nil
 }
 
+// ListParams is parameters of list operation.
+type ListParams struct {
+	Tag []string `json:",omitempty"`
+}
+
+func unpackListParams(packed middleware.Parameters) (params ListParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "tag",
+			In:   "query",
+		}
+		params.Tag = packed[key].([]string)
+	}
+	return params
+}
+
+func decodeListParams(args [0]string, argsEscaped bool, r *http.Request) (params ListParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: tag.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "tag",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotTagVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotTagVal = c
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Tag = append(params.Tag, paramsDotTagVal)
+					return nil
+				})
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if params.Tag == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "tag",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // ReadParams is parameters of read operation.
 type ReadParams struct {
 	ID string

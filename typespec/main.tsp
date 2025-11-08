@@ -21,6 +21,9 @@ op create(@path id: string, body: ThePet) : {
   @body pet: ThePet;
 };
 
+@get
+op list(@query(#{ explode: true }) tag: string[]): ThePet[];
+
 model ThePet {
   pet: Pet;
   pet2: Pet2;

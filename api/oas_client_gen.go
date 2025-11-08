@@ -24,6 +24,10 @@ type Invoker interface {
 	//
 	// POST /{id}
 	Create(ctx context.Context, request *CreateReq, params CreateParams) (*ThePet, error)
+	// List invokes list operation.
+	//
+	// GET /
+	List(ctx context.Context, params ListParams) ([]ThePet, error)
 	// Read invokes read operation.
 	//
 	// GET /{id}
@@ -130,6 +134,66 @@ func (c *Client) sendCreate(ctx context.Context, request *CreateReq, params Crea
 	defer resp.Body.Close()
 
 	result, err := decodeCreateResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// List invokes list operation.
+//
+// GET /
+func (c *Client) List(ctx context.Context, params ListParams) ([]ThePet, error) {
+	res, err := c.sendList(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendList(ctx context.Context, params ListParams) (res []ThePet, err error) {
+
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "tag" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "tag",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeArray(func(e uri.Encoder) error {
+				for i, item := range params.Tag {
+					if err := func() error {
+						return e.EncodeValue(conv.StringToString(item))
+					}(); err != nil {
+						return errors.Wrapf(err, "[%d]", i)
+					}
+				}
+				return nil
+			})
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	result, err := decodeListResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

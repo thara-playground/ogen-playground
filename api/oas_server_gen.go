@@ -12,6 +12,10 @@ type Handler interface {
 	//
 	// POST /{id}
 	Create(ctx context.Context, req *CreateReq, params CreateParams) (*ThePet, error)
+	// List implements list operation.
+	//
+	// GET /
+	List(ctx context.Context, params ListParams) ([]ThePet, error)
 	// Read implements read operation.
 	//
 	// GET /{id}
